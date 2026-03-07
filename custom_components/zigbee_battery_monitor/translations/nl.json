@@ -1,0 +1,71 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Zigbee Battery Monitor instellen",
+        "description": "Stel de drempelwaarden en notificatie-instellingen in.",
+        "data": {
+          "threshold_critical": "Kritieke drempel (%)",
+          "threshold_low": "Lage drempel (%)",
+          "threshold_warning": "Waarschuwingsdrempel (%)",
+          "notify_services": "Notify services (komma-gescheiden, bijv. notify.mobile_app_telefoon)",
+          "notify_critical": "Stuur directe melding bij kritieke batterij",
+          "notify_daily": "Dagelijkse batterij melding inschakelen",
+          "notify_time_daily": "Tijd dagelijkse melding (HH:MM)",
+          "notify_weekly": "Wekelijks batterij rapport inschakelen",
+          "notify_time_weekly": "Tijd wekelijks rapport (HH:MM)",
+          "notify_weekday": "Dag wekelijks rapport",
+          "scan_interval": "Scan interval (minuten)"
+        },
+        "data_description": {
+          "threshold_critical": "Apparaten onder dit percentage krijgen een directe melding",
+          "threshold_low": "Dagelijkse melding voor apparaten onder dit percentage",
+          "threshold_warning": "Wekelijkse melding voor apparaten onder dit percentage",
+          "notify_services": "Voer de volledige service naam(en) in, bijv: notify.mobile_app_samsung"
+        }
+      }
+    },
+    "error": {
+      "invalid_thresholds": "Drempelwaarden moeten oplopend zijn: kritiek < laag < waarschuwing"
+    },
+    "abort": {
+      "already_configured": "Zigbee Battery Monitor is al geconfigureerd"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Zigbee Battery Monitor opties",
+        "data": {
+          "threshold_critical": "Kritieke drempel (%)",
+          "threshold_low": "Lage drempel (%)",
+          "threshold_warning": "Waarschuwingsdrempel (%)",
+          "notify_services": "Notify services (komma-gescheiden)",
+          "notify_critical": "Stuur directe melding bij kritieke batterij",
+          "notify_daily": "Dagelijkse batterij melding inschakelen",
+          "notify_time_daily": "Tijd dagelijkse melding (HH:MM)",
+          "notify_weekly": "Wekelijks batterij rapport inschakelen",
+          "notify_time_weekly": "Tijd wekelijks rapport (HH:MM)",
+          "notify_weekday": "Dag wekelijks rapport",
+          "scan_interval": "Scan interval (minuten)"
+        }
+      }
+    },
+    "error": {
+      "invalid_thresholds": "Drempelwaarden moeten oplopend zijn: kritiek < laag < waarschuwing"
+    }
+  },
+  "selector": {
+    "notify_weekday": {
+      "options": {
+        "mon": "Maandag",
+        "tue": "Dinsdag",
+        "wed": "Woensdag",
+        "thu": "Donderdag",
+        "fri": "Vrijdag",
+        "sat": "Zaterdag",
+        "sun": "Zondag"
+      }
+    }
+  }
+}

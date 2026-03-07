@@ -1,0 +1,106 @@
+title: 🔋 Zigbee Batterijen
+views:
+  - title: Batterij Overzicht
+    icon: mdi:battery-charging-wireless
+    path: zigbee-batterijen
+    cards:
+
+      # ── STATISTIEKEN BOVEN ──────────────────────────────
+      - type: glance
+        title: Overzicht
+        entities:
+          - entity: sensor.zigbee_batterij_kritieke_batterijen
+            name: Kritiek
+          - entity: sensor.zigbee_batterij_lage_batterijen
+            name: Laag
+          - entity: sensor.zigbee_batterij_batterij_waarschuwingen
+            name: Waarschuwing
+          - entity: sensor.zigbee_batterij_batterijen_ok
+            name: OK
+          - entity: sensor.zigbee_batterijen_totaal
+            name: Totaal
+
+      # ── KRITIEK ─────────────────────────────────────────
+      - type: custom:auto-entities
+        card:
+          type: entities
+          title: 🔴 Kritiek (onder 10%)
+          icon: mdi:battery-alert
+        filter:
+          include:
+            - attributes:
+                device_class: battery
+              state: "<10"
+              not:
+                state: unavailable
+        sort:
+          method: state
+          numeric: true
+        show_empty: false
+
+      # ── LAAG ─────────────────────────────────────────────
+      - type: custom:auto-entities
+        card:
+          type: entities
+          title: 🟠 Laag (10–20%)
+          icon: mdi:battery-low
+        filter:
+          include:
+            - attributes:
+                device_class: battery
+              state: "<20"
+          exclude:
+            - state: "<10"
+            - state: unavailable
+        sort:
+          method: state
+          numeric: true
+        show_empty: false
+
+      # ── WAARSCHUWING ──────────────────────────────────────
+      - type: custom:auto-entities
+        card:
+          type: entities
+          title: 🟡 Waarschuwing (20–30%)
+          icon: mdi:battery-medium
+        filter:
+          include:
+            - attributes:
+                device_class: battery
+              state: "<30"
+          exclude:
+            - state: "<20"
+            - state: unavailable
+        sort:
+          method: state
+          numeric: true
+        show_empty: false
+
+      # ── ALLE APPARATEN ────────────────────────────────────
+      - type: custom:auto-entities
+        card:
+          type: entities
+          title: 📊 Alle batterijen
+          show_header_toggle: false
+        filter:
+          include:
+            - attributes:
+                device_class: battery
+              not:
+                state: unavailable
+        sort:
+          method: state
+          numeric: true
+        show_empty: false
+
+      # ── OFFLINE ───────────────────────────────────────────
+      - type: custom:auto-entities
+        card:
+          type: entities
+          title: ⚫ Niet beschikbaar
+        filter:
+          include:
+            - attributes:
+                device_class: battery
+              state: unavailable
+        show_empty: false

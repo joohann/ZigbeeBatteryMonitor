@@ -1,0 +1,52 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Set up Zigbee Battery Monitor",
+        "description": "Configure battery thresholds and notification settings.",
+        "data": {
+          "threshold_critical": "Critical threshold (%)",
+          "threshold_low": "Low threshold (%)",
+          "threshold_warning": "Warning threshold (%)",
+          "notify_services": "Notify services (comma-separated, e.g. notify.mobile_app_phone)",
+          "notify_critical": "Send instant alert for critical battery",
+          "notify_daily": "Enable daily battery alert",
+          "notify_time_daily": "Daily alert time (HH:MM)",
+          "notify_weekly": "Enable weekly battery report",
+          "notify_time_weekly": "Weekly report time (HH:MM)",
+          "notify_weekday": "Day for weekly report",
+          "scan_interval": "Scan interval (minutes)"
+        }
+      }
+    },
+    "error": {
+      "invalid_thresholds": "Thresholds must be ascending: critical < low < warning"
+    },
+    "abort": {
+      "already_configured": "Zigbee Battery Monitor is already configured"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Zigbee Battery Monitor options",
+        "data": {
+          "threshold_critical": "Critical threshold (%)",
+          "threshold_low": "Low threshold (%)",
+          "threshold_warning": "Warning threshold (%)",
+          "notify_services": "Notify services (comma-separated)",
+          "notify_critical": "Send instant alert for critical battery",
+          "notify_daily": "Enable daily battery alert",
+          "notify_time_daily": "Daily alert time (HH:MM)",
+          "notify_weekly": "Enable weekly battery report",
+          "notify_time_weekly": "Weekly report time (HH:MM)",
+          "notify_weekday": "Day for weekly report",
+          "scan_interval": "Scan interval (minutes)"
+        }
+      }
+    },
+    "error": {
+      "invalid_thresholds": "Thresholds must be ascending: critical < low < warning"
+    }
+  }
+}
