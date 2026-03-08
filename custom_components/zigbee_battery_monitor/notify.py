@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import logging
-from datetime import datetime, time
+from datetime import datetime
 from typing import Any
 
 from homeassistant.core import HomeAssistant

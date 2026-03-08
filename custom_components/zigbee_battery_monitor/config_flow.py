@@ -10,7 +10,6 @@ from homeassistant import config_entries
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.data_entry_flow import FlowResult
 from homeassistant.helpers import selector
-import homeassistant.helpers.config_validation as cv
 
 from .const import (
     DOMAIN,
@@ -189,6 +188,6 @@ class ZigbeeBatteryMonitorOptionsFlow(config_entries.OptionsFlow):
 def _validate_thresholds(data: dict) -> bool:
     """Validate that critical < low < warning."""
     c = data.get(CONF_THRESHOLD_CRITICAL, DEFAULT_THRESHOLD_CRITICAL)
-    l = data.get(CONF_THRESHOLD_LOW, DEFAULT_THRESHOLD_LOW)
+    low = data.get(CONF_THRESHOLD_LOW, DEFAULT_THRESHOLD_LOW)
     w = data.get(CONF_THRESHOLD_WARNING, DEFAULT_THRESHOLD_WARNING)
-    return c < l < w
+    return c < low < w

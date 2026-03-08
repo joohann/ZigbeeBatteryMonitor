@@ -2,14 +2,12 @@
 from __future__ import annotations
 
 import logging
-from datetime import timedelta
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.event import async_track_time_interval
 
-from .const import DOMAIN, CONF_THRESHOLD_CRITICAL, CONF_THRESHOLD_LOW, CONF_THRESHOLD_WARNING
+from .const import DOMAIN
 from .coordinator import ZigbeeBatteryCoordinator
 
 _LOGGER = logging.getLogger(__name__)
