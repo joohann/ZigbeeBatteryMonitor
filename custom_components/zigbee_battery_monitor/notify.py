@@ -5,16 +5,13 @@ import logging
 from datetime import datetime, time
 from typing import Any
 
-from homeassistant.core import HomeAssistant, ServiceCall, callback
-from homeassistant.helpers.event import async_track_time
+from homeassistant.core import HomeAssistant
 
 from .const import (
     CONF_NOTIFY_SERVICES,
     CONF_NOTIFY_CRITICAL,
     CONF_NOTIFY_DAILY,
     CONF_NOTIFY_WEEKLY,
-    CONF_NOTIFY_TIME_DAILY,
-    CONF_NOTIFY_TIME_WEEKLY,
     CONF_NOTIFY_WEEKDAY,
     BATTERY_LEVEL_CRITICAL,
     BATTERY_LEVEL_LOW,
