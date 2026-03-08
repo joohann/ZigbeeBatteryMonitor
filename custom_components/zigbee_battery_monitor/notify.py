@@ -41,8 +41,11 @@ class ZiggeeBatteryNotifier:
         self._last_critical_notified: set[str] = set()
 
     def get_notify_services(self) -> list[str]:
-        """Parse notify service list from config string."""
-        raw = self.config.get(CONF_NOTIFY_SERVICES, "")
+        """Return notify services list (stored as list via multi-select selector)."""
+        raw = self.config.get(CONF_NOTIFY_SERVICES, [])
+        if isinstance(raw, list):
+            return [s for s in raw if s]
+        # Fallback: legacy comma-separated string
         return [s.strip() for s in raw.split(",") if s.strip()]
 
     async def async_send(self, title: str, message: str, tag: str, color: str = "#3498db") -> None:

@@ -1,0 +1,46 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  release:
+    name: Maak release aan
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Haal versie op uit manifest
+        id: version
+        run: |
+          VERSION=$(cat custom_components/zigbee_battery_monitor/manifest.json | python3 -c "import sys,json; print(json.load(sys.stdin)['version'])")
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Maak zip van integratie
+        run: |
+          cd custom_components
+          zip -r ../zigbee_battery_monitor.zip zigbee_battery_monitor/
+          cd ..
+
+      - name: Maak GitHub Release aan
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "v${{ steps.version.outputs.version }}"
+          body: |
+            ## Zigbee Battery Monitor v${{ steps.version.outputs.version }}
+
+            ### Installatie via HACS
+            1. Ga naar HACS → Integraties → Aangepaste repositories
+            2. Voeg toe: `https://github.com/joohann/ZigbeeBatteryMonitor`
+            3. Installeer **Zigbee Battery Monitor**
+            4. Herstart Home Assistant
+
+            ### Handmatige installatie
+            Download `zigbee_battery_monitor.zip` en pak uit in `config/custom_components/`
+          files: zigbee_battery_monitor.zip
+          generate_release_notes: true

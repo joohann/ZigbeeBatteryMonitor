@@ -7,8 +7,9 @@ from typing import Any
 import voluptuous as vol
 
 from homeassistant import config_entries
-from homeassistant.core import callback
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.data_entry_flow import FlowResult
+from homeassistant.helpers import selector
 import homeassistant.helpers.config_validation as cv
 
 from .const import (
@@ -38,52 +39,84 @@ from .const import (
 _LOGGER = logging.getLogger(__name__)
 
 
-def _build_schema(defaults: dict) -> vol.Schema:
+def _get_notify_services(hass: HomeAssistant) -> list[str]:
+    """Dynamically fetch all available notify.* services from HA."""
+    services = hass.services.async_services().get("notify", {})
+    return sorted([
+        f"notify.{service}"
+        for service in services
+        if service not in ("persistent_notification",)
+    ])
+
+
+def _build_schema(defaults: dict, notify_options: list[str]) -> vol.Schema:
     return vol.Schema({
         vol.Required(
             CONF_THRESHOLD_CRITICAL,
             default=defaults.get(CONF_THRESHOLD_CRITICAL, DEFAULT_THRESHOLD_CRITICAL),
-        ): vol.All(int, vol.Range(min=1, max=50)),
+        ): selector.NumberSelector(
+            selector.NumberSelectorConfig(min=1, max=50, step=1, mode=selector.NumberSelectorMode.SLIDER)
+        ),
         vol.Required(
             CONF_THRESHOLD_LOW,
             default=defaults.get(CONF_THRESHOLD_LOW, DEFAULT_THRESHOLD_LOW),
-        ): vol.All(int, vol.Range(min=1, max=50)),
+        ): selector.NumberSelector(
+            selector.NumberSelectorConfig(min=1, max=50, step=1, mode=selector.NumberSelectorMode.SLIDER)
+        ),
         vol.Required(
             CONF_THRESHOLD_WARNING,
             default=defaults.get(CONF_THRESHOLD_WARNING, DEFAULT_THRESHOLD_WARNING),
-        ): vol.All(int, vol.Range(min=1, max=80)),
+        ): selector.NumberSelector(
+            selector.NumberSelectorConfig(min=1, max=80, step=1, mode=selector.NumberSelectorMode.SLIDER)
+        ),
         vol.Optional(
             CONF_NOTIFY_SERVICES,
-            default=defaults.get(CONF_NOTIFY_SERVICES, ""),
-        ): str,
+            default=defaults.get(CONF_NOTIFY_SERVICES, []),
+        ): selector.SelectSelector(
+            selector.SelectSelectorConfig(
+                options=notify_options,
+                multiple=True,
+                mode=selector.SelectSelectorMode.LIST,
+            )
+        ),
         vol.Required(
             CONF_NOTIFY_CRITICAL,
             default=defaults.get(CONF_NOTIFY_CRITICAL, True),
-        ): bool,
+        ): selector.BooleanSelector(),
         vol.Required(
             CONF_NOTIFY_DAILY,
             default=defaults.get(CONF_NOTIFY_DAILY, True),
-        ): bool,
+        ): selector.BooleanSelector(),
         vol.Required(
             CONF_NOTIFY_TIME_DAILY,
             default=defaults.get(CONF_NOTIFY_TIME_DAILY, DEFAULT_NOTIFY_TIME_DAILY),
-        ): str,
+        ): selector.TimeSelector(),
         vol.Required(
             CONF_NOTIFY_WEEKLY,
             default=defaults.get(CONF_NOTIFY_WEEKLY, True),
-        ): bool,
+        ): selector.BooleanSelector(),
         vol.Required(
             CONF_NOTIFY_TIME_WEEKLY,
             default=defaults.get(CONF_NOTIFY_TIME_WEEKLY, DEFAULT_NOTIFY_TIME_WEEKLY),
-        ): str,
+        ): selector.TimeSelector(),
         vol.Required(
             CONF_NOTIFY_WEEKDAY,
             default=defaults.get(CONF_NOTIFY_WEEKDAY, DEFAULT_NOTIFY_WEEKDAY),
-        ): vol.In(list(WEEKDAYS.keys())),
+        ): selector.SelectSelector(
+            selector.SelectSelectorConfig(
+                options=[
+                    {"value": k, "label": v}
+                    for k, v in WEEKDAYS.items()
+                ],
+                mode=selector.SelectSelectorMode.DROPDOWN,
+            )
+        ),
         vol.Required(
             CONF_SCAN_INTERVAL,
             default=defaults.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL),
-        ): vol.All(int, vol.Range(min=5, max=1440)),
+        ): selector.NumberSelector(
+            selector.NumberSelectorConfig(min=5, max=1440, step=5, mode=selector.NumberSelectorMode.BOX, unit_of_measurement="minuten")
+        ),
     })
 
 
@@ -96,11 +129,11 @@ class ZigbeeBatteryMonitorConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         self, user_input: dict[str, Any] | None = None
     ) -> FlowResult:
         """Handle the initial step."""
-        # Only allow one instance
         await self.async_set_unique_id(DOMAIN)
         self._abort_if_unique_id_configured()
 
         errors: dict[str, str] = {}
+        notify_options = _get_notify_services(self.hass)
 
         if user_input is not None:
             if not _validate_thresholds(user_input):
@@ -110,10 +143,10 @@ class ZigbeeBatteryMonitorConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         return self.async_show_form(
             step_id="user",
-            data_schema=_build_schema(user_input or {}),
+            data_schema=_build_schema(user_input or {}, notify_options),
             errors=errors,
             description_placeholders={
-                "docs_url": "https://github.com/jouw-gebruikersnaam/zigbee-battery-monitor"
+                "docs_url": "https://github.com/joohann/ZigbeeBatteryMonitor"
             },
         )
 
@@ -136,6 +169,7 @@ class ZigbeeBatteryMonitorOptionsFlow(config_entries.OptionsFlow):
     ) -> FlowResult:
         """Manage the options."""
         errors: dict[str, str] = {}
+        notify_options = _get_notify_services(self.hass)
 
         if user_input is not None:
             if not _validate_thresholds(user_input):
@@ -147,7 +181,7 @@ class ZigbeeBatteryMonitorOptionsFlow(config_entries.OptionsFlow):
 
         return self.async_show_form(
             step_id="init",
-            data_schema=_build_schema(current),
+            data_schema=_build_schema(current, notify_options),
             errors=errors,
         )
 
