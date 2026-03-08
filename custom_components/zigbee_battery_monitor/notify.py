@@ -1,4 +1,5 @@
 """Notification handler for Zigbee Battery Monitor."""
+
 from __future__ import annotations
 
 import logging
@@ -45,7 +46,9 @@ class ZiggeeBatteryNotifier:
         # Fallback: legacy comma-separated string
         return [s.strip() for s in raw.split(",") if s.strip()]
 
-    async def async_send(self, title: str, message: str, tag: str, color: str = "#3498db") -> None:
+    async def async_send(
+        self, title: str, message: str, tag: str, color: str = "#3498db"
+    ) -> None:
         """Send notification to all configured services."""
         services = self.get_notify_services()
         if not services:
@@ -68,7 +71,9 @@ class ZiggeeBatteryNotifier:
                     },
                 )
             except Exception as err:
-                _LOGGER.error("Fout bij versturen notificatie naar %s: %s", service, err)
+                _LOGGER.error(
+                    "Fout bij versturen notificatie naar %s: %s", service, err
+                )
 
     async def async_check_critical(self) -> None:
         """Send immediate notification for newly critical devices."""
@@ -79,16 +84,15 @@ class ZiggeeBatteryNotifier:
 
         critical_devices = self.coordinator.data.get(BATTERY_LEVEL_CRITICAL, [])
         newly_critical = [
-            d for d in critical_devices
+            d
+            for d in critical_devices
             if d["entity_id"] not in self._last_critical_notified
         ]
 
         if not newly_critical:
             return
 
-        lines = "\n".join(
-            f"• {d['name']}: {d['battery_pct']}%" for d in newly_critical
-        )
+        lines = "\n".join(f"• {d['name']}: {d['battery_pct']}%" for d in newly_critical)
         await self.async_send(
             title="🔴 Kritieke batterij!",
             message=f"{len(newly_critical)} apparaat/apparaten heeft een kritiek lage batterij:\n{lines}",
@@ -128,7 +132,15 @@ class ZiggeeBatteryNotifier:
 
         now = datetime.now()
         weekday = self.config.get(CONF_NOTIFY_WEEKDAY, "mon")
-        weekday_map = {"mon": 0, "tue": 1, "wed": 2, "thu": 3, "fri": 4, "sat": 5, "sun": 6}
+        weekday_map = {
+            "mon": 0,
+            "tue": 1,
+            "wed": 2,
+            "thu": 3,
+            "fri": 4,
+            "sat": 5,
+            "sun": 6,
+        }
         if now.weekday() != weekday_map.get(weekday, 0):
             return
 

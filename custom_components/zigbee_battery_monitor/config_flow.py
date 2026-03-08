@@ -1,4 +1,5 @@
 """Config flow for Zigbee Battery Monitor."""
+
 from __future__ import annotations
 
 import logging
@@ -41,82 +42,99 @@ _LOGGER = logging.getLogger(__name__)
 def _get_notify_services(hass: HomeAssistant) -> list[str]:
     """Dynamically fetch all available notify.* services from HA."""
     services = hass.services.async_services().get("notify", {})
-    return sorted([
-        f"notify.{service}"
-        for service in services
-        if service not in ("persistent_notification",)
-    ])
+    return sorted(
+        [
+            f"notify.{service}"
+            for service in services
+            if service not in ("persistent_notification",)
+        ]
+    )
 
 
 def _build_schema(defaults: dict, notify_options: list[str]) -> vol.Schema:
-    return vol.Schema({
-        vol.Required(
-            CONF_THRESHOLD_CRITICAL,
-            default=defaults.get(CONF_THRESHOLD_CRITICAL, DEFAULT_THRESHOLD_CRITICAL),
-        ): selector.NumberSelector(
-            selector.NumberSelectorConfig(min=1, max=50, step=1, mode=selector.NumberSelectorMode.SLIDER)
-        ),
-        vol.Required(
-            CONF_THRESHOLD_LOW,
-            default=defaults.get(CONF_THRESHOLD_LOW, DEFAULT_THRESHOLD_LOW),
-        ): selector.NumberSelector(
-            selector.NumberSelectorConfig(min=1, max=50, step=1, mode=selector.NumberSelectorMode.SLIDER)
-        ),
-        vol.Required(
-            CONF_THRESHOLD_WARNING,
-            default=defaults.get(CONF_THRESHOLD_WARNING, DEFAULT_THRESHOLD_WARNING),
-        ): selector.NumberSelector(
-            selector.NumberSelectorConfig(min=1, max=80, step=1, mode=selector.NumberSelectorMode.SLIDER)
-        ),
-        vol.Optional(
-            CONF_NOTIFY_SERVICES,
-            default=defaults.get(CONF_NOTIFY_SERVICES, []),
-        ): selector.SelectSelector(
-            selector.SelectSelectorConfig(
-                options=notify_options,
-                multiple=True,
-                mode=selector.SelectSelectorMode.LIST,
-            )
-        ),
-        vol.Required(
-            CONF_NOTIFY_CRITICAL,
-            default=defaults.get(CONF_NOTIFY_CRITICAL, True),
-        ): selector.BooleanSelector(),
-        vol.Required(
-            CONF_NOTIFY_DAILY,
-            default=defaults.get(CONF_NOTIFY_DAILY, True),
-        ): selector.BooleanSelector(),
-        vol.Required(
-            CONF_NOTIFY_TIME_DAILY,
-            default=defaults.get(CONF_NOTIFY_TIME_DAILY, DEFAULT_NOTIFY_TIME_DAILY),
-        ): selector.TimeSelector(),
-        vol.Required(
-            CONF_NOTIFY_WEEKLY,
-            default=defaults.get(CONF_NOTIFY_WEEKLY, True),
-        ): selector.BooleanSelector(),
-        vol.Required(
-            CONF_NOTIFY_TIME_WEEKLY,
-            default=defaults.get(CONF_NOTIFY_TIME_WEEKLY, DEFAULT_NOTIFY_TIME_WEEKLY),
-        ): selector.TimeSelector(),
-        vol.Required(
-            CONF_NOTIFY_WEEKDAY,
-            default=defaults.get(CONF_NOTIFY_WEEKDAY, DEFAULT_NOTIFY_WEEKDAY),
-        ): selector.SelectSelector(
-            selector.SelectSelectorConfig(
-                options=[
-                    {"value": k, "label": v}
-                    for k, v in WEEKDAYS.items()
-                ],
-                mode=selector.SelectSelectorMode.DROPDOWN,
-            )
-        ),
-        vol.Required(
-            CONF_SCAN_INTERVAL,
-            default=defaults.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL),
-        ): selector.NumberSelector(
-            selector.NumberSelectorConfig(min=5, max=1440, step=5, mode=selector.NumberSelectorMode.BOX, unit_of_measurement="minuten")
-        ),
-    })
+    return vol.Schema(
+        {
+            vol.Required(
+                CONF_THRESHOLD_CRITICAL,
+                default=defaults.get(
+                    CONF_THRESHOLD_CRITICAL, DEFAULT_THRESHOLD_CRITICAL
+                ),
+            ): selector.NumberSelector(
+                selector.NumberSelectorConfig(
+                    min=1, max=50, step=1, mode=selector.NumberSelectorMode.SLIDER
+                )
+            ),
+            vol.Required(
+                CONF_THRESHOLD_LOW,
+                default=defaults.get(CONF_THRESHOLD_LOW, DEFAULT_THRESHOLD_LOW),
+            ): selector.NumberSelector(
+                selector.NumberSelectorConfig(
+                    min=1, max=50, step=1, mode=selector.NumberSelectorMode.SLIDER
+                )
+            ),
+            vol.Required(
+                CONF_THRESHOLD_WARNING,
+                default=defaults.get(CONF_THRESHOLD_WARNING, DEFAULT_THRESHOLD_WARNING),
+            ): selector.NumberSelector(
+                selector.NumberSelectorConfig(
+                    min=1, max=80, step=1, mode=selector.NumberSelectorMode.SLIDER
+                )
+            ),
+            vol.Optional(
+                CONF_NOTIFY_SERVICES,
+                default=defaults.get(CONF_NOTIFY_SERVICES, []),
+            ): selector.SelectSelector(
+                selector.SelectSelectorConfig(
+                    options=notify_options,
+                    multiple=True,
+                    mode=selector.SelectSelectorMode.LIST,
+                )
+            ),
+            vol.Required(
+                CONF_NOTIFY_CRITICAL,
+                default=defaults.get(CONF_NOTIFY_CRITICAL, True),
+            ): selector.BooleanSelector(),
+            vol.Required(
+                CONF_NOTIFY_DAILY,
+                default=defaults.get(CONF_NOTIFY_DAILY, True),
+            ): selector.BooleanSelector(),
+            vol.Required(
+                CONF_NOTIFY_TIME_DAILY,
+                default=defaults.get(CONF_NOTIFY_TIME_DAILY, DEFAULT_NOTIFY_TIME_DAILY),
+            ): selector.TimeSelector(),
+            vol.Required(
+                CONF_NOTIFY_WEEKLY,
+                default=defaults.get(CONF_NOTIFY_WEEKLY, True),
+            ): selector.BooleanSelector(),
+            vol.Required(
+                CONF_NOTIFY_TIME_WEEKLY,
+                default=defaults.get(
+                    CONF_NOTIFY_TIME_WEEKLY, DEFAULT_NOTIFY_TIME_WEEKLY
+                ),
+            ): selector.TimeSelector(),
+            vol.Required(
+                CONF_NOTIFY_WEEKDAY,
+                default=defaults.get(CONF_NOTIFY_WEEKDAY, DEFAULT_NOTIFY_WEEKDAY),
+            ): selector.SelectSelector(
+                selector.SelectSelectorConfig(
+                    options=[{"value": k, "label": v} for k, v in WEEKDAYS.items()],
+                    mode=selector.SelectSelectorMode.DROPDOWN,
+                )
+            ),
+            vol.Required(
+                CONF_SCAN_INTERVAL,
+                default=defaults.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL),
+            ): selector.NumberSelector(
+                selector.NumberSelectorConfig(
+                    min=5,
+                    max=1440,
+                    step=5,
+                    mode=selector.NumberSelectorMode.BOX,
+                    unit_of_measurement="minuten",
+                )
+            ),
+        }
+    )
 
 
 class ZigbeeBatteryMonitorConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):

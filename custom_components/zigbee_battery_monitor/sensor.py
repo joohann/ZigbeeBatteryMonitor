@@ -1,4 +1,5 @@
 """Sensor platform for Zigbee Battery Monitor."""
+
 from __future__ import annotations
 
 import logging
@@ -31,14 +32,46 @@ async def async_setup_entry(
     """Set up sensors."""
     coordinator: ZigbeeBatteryCoordinator = hass.data[DOMAIN][entry.entry_id]
 
-    async_add_entities([
-        ZiggeeBatterySummarySensor(coordinator, BATTERY_LEVEL_CRITICAL, "Kritieke Batterijen", "mdi:battery-alert", "#FF0000"),
-        ZiggeeBatterySummarySensor(coordinator, BATTERY_LEVEL_LOW, "Lage Batterijen", "mdi:battery-low", "#FF8C00"),
-        ZiggeeBatterySummarySensor(coordinator, BATTERY_LEVEL_WARNING, "Batterij Waarschuwingen", "mdi:battery-medium", "#FFD700"),
-        ZiggeeBatterySummarySensor(coordinator, BATTERY_LEVEL_OK, "Batterijen OK", "mdi:battery-high", "#00C853"),
-        ZiggeeBatterySummarySensor(coordinator, BATTERY_LEVEL_UNAVAILABLE, "Niet Beschikbaar", "mdi:battery-unknown", "#808080"),
-        ZigbeeBatteryTotalSensor(coordinator),
-    ])
+    async_add_entities(
+        [
+            ZiggeeBatterySummarySensor(
+                coordinator,
+                BATTERY_LEVEL_CRITICAL,
+                "Kritieke Batterijen",
+                "mdi:battery-alert",
+                "#FF0000",
+            ),
+            ZiggeeBatterySummarySensor(
+                coordinator,
+                BATTERY_LEVEL_LOW,
+                "Lage Batterijen",
+                "mdi:battery-low",
+                "#FF8C00",
+            ),
+            ZiggeeBatterySummarySensor(
+                coordinator,
+                BATTERY_LEVEL_WARNING,
+                "Batterij Waarschuwingen",
+                "mdi:battery-medium",
+                "#FFD700",
+            ),
+            ZiggeeBatterySummarySensor(
+                coordinator,
+                BATTERY_LEVEL_OK,
+                "Batterijen OK",
+                "mdi:battery-high",
+                "#00C853",
+            ),
+            ZiggeeBatterySummarySensor(
+                coordinator,
+                BATTERY_LEVEL_UNAVAILABLE,
+                "Niet Beschikbaar",
+                "mdi:battery-unknown",
+                "#808080",
+            ),
+            ZigbeeBatteryTotalSensor(coordinator),
+        ]
+    )
 
 
 class ZiggeeBatterySummarySensor(CoordinatorEntity, SensorEntity):
@@ -80,7 +113,9 @@ class ZiggeeBatterySummarySensor(CoordinatorEntity, SensorEntity):
                 {
                     "naam": d["name"],
                     "entity_id": d["entity_id"],
-                    "batterij": f"{d['battery_pct']}%" if d["battery_pct"] is not None else d["state"],
+                    "batterij": f"{d['battery_pct']}%"
+                    if d["battery_pct"] is not None
+                    else d["state"],
                 }
                 for d in devices
             ],
